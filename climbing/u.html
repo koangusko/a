@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>i</title>
+</head>
+<body>
+  <h1>ad--;</h1>
+  <input type="text" id="urlInput" placeholder="輸入目標網頁的網址">
+  <button onclick="getWebData()">取得資料</button>
+  <div id="resultContainer"></div>
+  <script>
+    function getWebData() {
+      var urlInput = document.getElementById('urlInput');
+      var resultContainer = document.getElementById('resultContainer');
+      var url = urlInput.value;
+      var filterAds = true; 
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var responseText = xhr.responseText;
+          if (filterAds) {
+            responseText = removeAds(responseText);
+          }
+          resultContainer.innerHTML = responseText;
+          addAdFilterToLinks();
+        } else {
+          resultContainer.innerHTML = '<p>發生錯誤。</p>';
+        }
+      };
+      xhr.send();
+    }
+    function removeAds(html) {
+      var adElements = document.querySelectorAll('.ad');
+      adElements.forEach(function(adElement) {
+        adElement.remove();
+      });
+
+      return html;
+    }
+    function addAdFilterToLinks() {
+      var links = document.getElementsByTagName('a');
+      for (var i = 0; i < links.length; i++) {
+        var link = links[i];
+        link.addEventListener('click', function(event) {
+          var urlInput = document.getElementById('urlInput');
+          urlInput.value = this.getAttribute('href');
+          getWebData();
+          event.preventDefault();
+        });
+      }
+    }
+  </script>
+</body>
+</html>
+
